@@ -1,12 +1,12 @@
-// src/upload/schemas/image.schema.ts
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-
-export type ImageDocument = Image & Document;
+import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
-export class Image {
+export class Image extends Document {
+ 
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user: Types.ObjectId;
+
   @Prop({ required: true })
   filename: string;
 

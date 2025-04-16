@@ -7,9 +7,10 @@ import { PubsubService } from './services/pubsub/pubsub.service';
 import { WebsocketGateway } from './services/websocket/websocket.gateway';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseModule } from './services/database/database.module';
+import { UserAuthModule } from './services/user-auth/user-auth.module';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost:27017/imagequeue'),UploadModule, QueueModule, DatabaseModule],
+  imports: [MongooseModule.forRoot('mongodb://localhost:27017/imagequeue'),UploadModule, QueueModule, DatabaseModule, UserAuthModule],
   controllers: [AppController],
   providers: [AppService, PubsubService, WebsocketGateway],
 })

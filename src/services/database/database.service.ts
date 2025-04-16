@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { stat } from 'fs';
 import { Model } from 'mongoose';
-import { Image, ImageDocument } from 'src/schemas/image.schema';
+import { Image } from 'src/schemas/image.schema';
 
 @Injectable()
 export class DatabaseService {
-      constructor(@InjectModel(Image.name) private imageModel: Model<ImageDocument>,) { }
+      constructor(@InjectModel(Image.name) private imageModel: Model<Image>,) { }
 
-      async createImage(filename: string) {
+      async createImage(filename: string,userId: string) {
         const newImage = new this.imageModel({
+          user:userId,
           filename,
           status: 'pending',
         });
@@ -25,8 +26,8 @@ export class DatabaseService {
         );
       }
     
-      async findAll() {
-        const images = await this.imageModel.find({},{_id:0,filename:1,status:1}).lean().exec()
+      async findAll(userId: string) {
+        const images = await this.imageModel.find({user:userId},{_id:0,filename:1,status:1}).lean().exec()
         return images.map((image) => {
           return {
             filename:image.filename,
@@ -34,5 +35,7 @@ export class DatabaseService {
           };
         });
       }
+
+      
     
 }
