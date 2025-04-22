@@ -22,7 +22,6 @@ export class UploadController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@Request() req,@UploadedFile() file: Express.Multer.File) {
-    console.log('req:', req.user);
     if (!file) {
       throw new HttpException('No file uploaded', HttpStatus.BAD_REQUEST);
     }

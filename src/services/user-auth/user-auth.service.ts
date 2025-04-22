@@ -30,9 +30,18 @@ export class UserAuthService {
     if(!comparePassword){
       return {status:400,message:"Password not matched"}
     }
-    const payload = { sub: findUser._id, username: findUser.username };
+    const payload = { sub: findUser._id, username: findUser.username,email:findUser.email };
     const token = await this.jwtService.signAsync(payload);
-    return { accessToken: token };
+    return {  username:findUser.username,email:data.email, token: token };
 
+  }
+
+  async verifyToken(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+      return decoded;
+    } catch (error) {
+      return null;
+    }
   }
 }

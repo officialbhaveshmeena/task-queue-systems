@@ -18,20 +18,25 @@ export class DatabaseService {
         return newImage.save(); // creates a document in MongoDB
       }
     
-      async updateStatus(filename: string, status: string) {
+      async updateStatus(filename: string, status: string,resizedPath: string | null,userId: string) {
+        let data:any = {status}
+        if(resizedPath){
+          data.resizedPath = resizedPath
+        }
         return this.imageModel.findOneAndUpdate(
-          { filename },
-          { status },
+          {user: userId,filename },
+          data, // Assuming you want to set the resizedPath here
           { new: true },
         );
       }
     
       async findAll(userId: string) {
-        const images = await this.imageModel.find({user:userId},{_id:0,filename:1,status:1}).lean().exec()
+        const images = await this.imageModel.find({user:userId},{_id:0,filename:1,status:1,resizedPath:1}).lean().exec()
         return images.map((image) => {
           return {
             filename:image.filename,
-              event:image.status
+              status:image.status,
+              resizedPath:image.resizedPath,
           };
         });
       }

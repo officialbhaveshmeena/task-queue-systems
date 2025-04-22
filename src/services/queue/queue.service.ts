@@ -6,7 +6,7 @@ import { createClient } from 'redis';
 import { DatabaseService } from '../database/database.service';
 @Injectable()
 export class QueueService implements OnModuleInit {
-  constructor(private readonly dbService:DatabaseService) {}
+  constructor(private readonly dbService: DatabaseService) { }
   private resizeQueue: Queue;
   async onModuleInit() {
     const connection = {
@@ -20,11 +20,12 @@ export class QueueService implements OnModuleInit {
       connection: connection,
     });
     const resizeWorker = new Worker('image-resize', async (job) => {
-      const { filename, inputPath, outputPath } = job.data;
-      console.log('Processing job:', job.id);
+      const { filename, inputPath, resizedPath, userId, resizedFullPath, _id } = job.data;
       await pub.publish('image-events', JSON.stringify({
-        event: 'started',
+        status: 'started',
         filename,
+        resizedPath,
+        _id
       }));
       try {
         // Use sharp to resize the image
@@ -34,26 +35,28 @@ export class QueueService implements OnModuleInit {
         })
         await sharp(inputPath)
           .resize(800, 600) // Example dimensions
-          .toFile(outputPath);
+          .toFile(resizedFullPath);
 
-        await this.dbService.updateStatus(filename, 'completed');
-          await pub.publish('image-events', JSON.stringify({
-            event: 'completed',
-            filename,
-            outputPath,
-          }));
-        return { success: true, outputPath };
-      } catch (error) {
-        await this.dbService.updateStatus(filename, 'failed');
+        await this.dbService.updateStatus(filename, 'completed', resizedPath, userId);
         await pub.publish('image-events', JSON.stringify({
-          event: 'failed',
+          status: 'completed',
           filename,
-          outputPath,
+          resizedPath,
+          _id
+        }));
+        return { success: true, resizedPath };
+      } catch (error) {
+        await this.dbService.updateStatus(filename, 'failed', null, userId,);
+        await pub.publish('image-events', JSON.stringify({
+          status: 'failed',
+          filename,
+          resizedPath,
+          _id
         }));
         console.error('Error resizing image:', error);
         throw error; // Ensure the job fails if there's an error
       }
-      
+
     }, {
       connection: {
         host: 'localhost',
@@ -65,20 +68,23 @@ export class QueueService implements OnModuleInit {
 
     // Add event listeners for worker
     resizeWorker.on('completed', (job) => {
-      console.log(`Job ${job?.id} completed successfully`);
+      // console.log(`Job ${job?.id} completed successfully`);
     });
 
     resizeWorker.on('failed', (job, err) => {
-      console.error(`Job ${job?.id} failed with error:`, err);
+      // console.error(`Job ${job?.id} failed with error:`, err);
     });
 
   }
 
-  async addResizeJob(file: any) {
+  async addResizeJob(file: any, userId: string, id: string) {
     const jobData: any = {
       filename: file.filename,
       inputPath: join(resolve('.'), file.destination, file.filename),
-      outputPath: join(resolve('.'), file.destination, `resized-${file.filename}`),
+      resizedFullPath: join(resolve('.'), file.destination, `resized-${file.filename}`),
+      resizedPath: `resized-${file.filename}`,
+      userId,
+      _id: id,
     };
 
     await this.resizeQueue.add('resize', jobData);

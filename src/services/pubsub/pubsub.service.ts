@@ -15,7 +15,7 @@ export class PubsubService implements OnModuleInit {
         await sub.subscribe('image-events', (message) => {
             const event = JSON.parse(message);
             console.log(`📣 PubSub Event:`, event);
-            this.websocketGateway.emitEvent('image-events', event);
+            this.websocketGateway.emitEvent('image-socket-events', event);
         });
     }
 

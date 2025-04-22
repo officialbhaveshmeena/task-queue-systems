@@ -25,11 +25,11 @@ export class WebsocketGateway  implements OnGatewayInit, OnGatewayConnection, On
     console.log('✅ WebSocket Gateway Initialized');
   }
   handleConnection(client: Socket) {
-    console.log(`📡 Client connected: ${client.id}`);
+    // console.log(`📡 Client connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`🔌 Client disconnected: ${client.id}`);
+    // console.log(`🔌 Client disconnected: ${client.id}`);
   }
 
     // Optional: you can add handlers here
