@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Queue, Worker } from 'bullmq';
-import { join, resolve } from 'path';
+import { join, resolve,basename } from 'path';
 import * as sharp from 'sharp';
 import { createClient } from 'redis';
 import { DatabaseService } from '../database/database.service';
@@ -20,7 +20,7 @@ export class QueueService implements OnModuleInit {
       connection: connection,
     });
     const resizeWorker = new Worker('image-resize', async (job) => {
-      const { filename, inputPath, outputPath } = job.data;
+      const { userId,filename, inputPath, outputPath } = job.data;
       console.log('Processing job:', job.id);
       await pub.publish('image-events', JSON.stringify({
         event: 'started',
@@ -33,18 +33,18 @@ export class QueueService implements OnModuleInit {
           setTimeout(() => { resolve(1) }, 3500); // Simulate a delay for the job processing
         })
         await sharp(inputPath)
-          .resize(800, 600) // Example dimensions
+          .resize(100, 100) // Example dimensions
           .toFile(outputPath);
 
-        await this.dbService.updateStatus(filename, 'completed');
+        await this.dbService.updateStatus(userId,filename, 'completed',basename(outputPath));
           await pub.publish('image-events', JSON.stringify({
             event: 'completed',
-            filename,
-            outputPath,
+            filename:"http://localhost:"+4000+"/uploads/"+basename(filename),
+            resizedPath:"http://localhost:"+4000+"/uploads/"+basename(outputPath) 
           }));
         return { success: true, outputPath };
       } catch (error) {
-        await this.dbService.updateStatus(filename, 'failed');
+        await this.dbService.updateStatus(userId,filename, 'failed',filename);
         await pub.publish('image-events', JSON.stringify({
           event: 'failed',
           filename,
@@ -74,8 +74,9 @@ export class QueueService implements OnModuleInit {
 
   }
 
-  async addResizeJob(file: any) {
+  async addResizeJob(userId,file: any) {
     const jobData: any = {
+      userId:userId,
       filename: file.filename,
       inputPath: join(resolve('.'), file.destination, file.filename),
       outputPath: join(resolve('.'), file.destination, `resized-${file.filename}`),

@@ -1,6 +1,6 @@
 // src/components/ImageUploader.jsx
 
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { uploadImage } from '../services/upload';
 
 const ImageUploader = () => {

@@ -47,13 +47,13 @@ const ImageList = () => {
         images.map((img) => (
           <div key={img._id} style={{ marginBottom: '12px' }}>
             <em>{img.event}</em> - <strong>{img.filename}</strong> 
-            {img.status === 'completed' && img.resizedPath && (
+            {img.event === 'completed' && img.resizedPath && (
               <div>
-                {/* <img
-                  src={`http://localhost:3000/${img.resizedPath}`}
+                <img
+                  src={`${img.resizedPath}`}
                   alt="Resized"
                   style={{ maxWidth: '200px', marginTop: '8px' }}
-                /> */}
+                />
               </div>
             )}
           </div>

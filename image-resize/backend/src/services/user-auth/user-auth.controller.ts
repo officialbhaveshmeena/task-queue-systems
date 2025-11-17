@@ -5,8 +5,8 @@ import { UpdateUserAuthDto } from './dto/update-user-auth.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 
-@UseGuards(JwtAuthGuard)
-@Controller('user-auth')
+// @UseGuards(JwtAuthGuard)
+@Controller('')
 export class UserAuthController {
   constructor(private readonly userAuthService: UserAuthService) {}
 

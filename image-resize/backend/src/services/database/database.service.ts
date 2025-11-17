@@ -18,19 +18,21 @@ export class DatabaseService {
         return newImage.save(); // creates a document in MongoDB
       }
     
-      async updateStatus(filename: string, status: string) {
+      async updateStatus(userId:string,filename: string, status: string,resizedPath:string) {
         return this.imageModel.findOneAndUpdate(
-          { filename },
-          { status },
+          {user:userId, filename },
+          { $set:{status,resizedPath:resizedPath} },
           { new: true },
         );
       }
     
       async findAll(userId: string) {
-        const images = await this.imageModel.find({user:userId},{_id:0,filename:1,status:1}).lean().exec()
+        const images = await this.imageModel.find({user:userId},{_id:0}).lean().exec()
         return images.map((image) => {
           return {
             filename:image.filename,
+            resizedPath:"http://localhost:"+4000+"/uploads/"+image.resizedPath,
+            // outputPath:image.outputPath,
               event:image.status
           };
         });

@@ -20,7 +20,24 @@ const ImageStatus = () => {
       <h2>Image Events</h2>
       {events.map((event, index) => (
         <div key={index}>
-          <strong>{event.event.toUpperCase()}</strong> — {event.filename}
+          <strong>{event.event.toUpperCase()}</strong> — {event.filename} 
+
+          <div>
+                <img
+                  src={`${event.filename}`}
+                  alt="Original"
+                  style={{ maxWidth: '200px', marginTop: '8px' }}
+                />
+              </div>
+          {event.event === 'completed' && event.resizedPath && (
+              <div>
+                <img
+                  src={`${event.resizedPath}`}
+                  alt="Resized"
+                  style={{ maxWidth: '200px', marginTop: '8px' }}
+                />
+              </div>
+            )}
         </div>
       ))}
     </div>
