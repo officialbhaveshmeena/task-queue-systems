@@ -1,0 +1,45 @@
+.card__wrapper {
+  /* border: 1px solid red; */
+  box-shadow: 1px 1px #ccc, -2px -1px #f2f2f2;
+  border-radius: 8px;
+  padding: 25px;
+  min-width: 400px;
+  max-width: 100%;
+}
+.image__wrapper > img {
+  width: 200px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.image__info {
+  margin-bottom: 15px;
+  text-transform: capitalize;
+   color: #242494;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+
+.image_button_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+.action__buttons > button {
+  padding: 15px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 8px;
+}
+
+.main__container {
+  /* border: 2px solid red; */
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  flex: 1;
+}

@@ -21,6 +21,8 @@ export class Image extends Document {
 
   @Prop()
   bullJobId?: string;
+
+  
 }
 
 export const ImageSchema = SchemaFactory.createForClass(Image);

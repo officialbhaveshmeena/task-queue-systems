@@ -4,7 +4,9 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Delete,
   Request,
+  Param,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -38,6 +40,12 @@ export class UploadController {
  async getAllFiles(@Request() req) {
     return await this.dbService.findAll(req.user.userId);
   }
+
+  @Delete('delete/:id')
+  async deleteFile(@Request() req,@Param('id') id: string) {
+    return await this.dbService.deleteImage(req.user.userId,id);
+  }
+  
 }
 
 

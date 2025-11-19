@@ -20,16 +20,16 @@ export class QueueService implements OnModuleInit {
       connection: connection,
     });
     const resizeWorker = new Worker('image-resize', async (job) => {
-      const { userId,filename, inputPath, outputPath } = job.data;
+      const { userId,filename, inputPath, outputPath,imageId } = job.data;
       console.log('Processing job:', job.id);
       await pub.publish('image-events', JSON.stringify({
+         id:job.id,
         event: 'started',
-        filename,
+        filename:"http://localhost:"+4000+"/uploads/"+basename(filename),
       }));
       try {
         // Use sharp to resize the image
         await new Promise((resolve, reject) => {
-
           setTimeout(() => { resolve(1) }, 3500); // Simulate a delay for the job processing
         })
         await sharp(inputPath)
@@ -38,6 +38,7 @@ export class QueueService implements OnModuleInit {
 
         await this.dbService.updateStatus(userId,filename, 'completed',basename(outputPath));
           await pub.publish('image-events', JSON.stringify({
+            id:job.id,
             event: 'completed',
             filename:"http://localhost:"+4000+"/uploads/"+basename(filename),
             resizedPath:"http://localhost:"+4000+"/uploads/"+basename(outputPath) 
@@ -74,8 +75,9 @@ export class QueueService implements OnModuleInit {
 
   }
 
-  async addResizeJob(userId,file: any) {
+  async addResizeJob(userId,file: any,imageId:string) {
     const jobData: any = {
+      imageId:imageId,
       userId:userId,
       filename: file.filename,
       inputPath: join(resolve('.'), file.destination, file.filename),

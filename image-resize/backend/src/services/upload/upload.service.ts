@@ -5,10 +5,14 @@ import { DatabaseService } from '../database/database.service';
 export class UploadService  {
 
     constructor(private readonly queueService:QueueService,private readonly dbService:DatabaseService){}
-    uploadFile(file: Express.Multer.File,userId: string) {
+    async uploadFile(file: Express.Multer.File,userId: string) {
         // Implement your file handling logic here
-        this.queueService.addResizeJob(userId,file);
-        this.dbService.createImage(file.filename,userId);
+       
+        const {_id} = await this.dbService.createImage(file.filename,userId);
+        
+        let imageId = String(_id)
+        console.log("--- image data ",imageId)
+         this.queueService.addResizeJob(userId,file,imageId);
         return { message: 'File uploaded successfully!', file };
       }
 }

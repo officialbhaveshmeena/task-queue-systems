@@ -27,3 +27,8 @@ export const fetchImages = async () => {
   const res = await axiosInstance.post('/upload/all'); // Changed to GET request
   return res.data;
 };
+
+export const deleteImage = async (id) => {
+  const res = await axiosInstance.delete('/upload/delete/'+id); // Changed to GET request
+  return res.data;
+};

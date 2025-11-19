@@ -27,16 +27,24 @@ export class DatabaseService {
       }
     
       async findAll(userId: string) {
-        const images = await this.imageModel.find({user:userId},{_id:0}).lean().exec()
+        const images = await this.imageModel.find({user:userId},{}).sort({}).sort({ createdAt: -1 }).exec()
         return images.map((image) => {
           return {
+            id:image._id,
             filename:image.filename,
             resizedPath:"http://localhost:"+4000+"/uploads/"+image.resizedPath,
             // outputPath:image.outputPath,
-              event:image.status
+              status:image.status
           };
         });
       }
+
+       async deleteImage(userId: string,id:string) {
+        return await this.imageModel.deleteOne({user:userId,_id:id}).exec()
+       
+      }
+
+      
 
       
     

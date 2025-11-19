@@ -20,6 +20,8 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  await app.listen(process.env.PORT ?? 4000);
+  await app.listen(process.env.PORT ?? 4000,()=>{
+    console.log("Server is running on port : "+process.env.PORT)
+  });
 }
 bootstrap();
